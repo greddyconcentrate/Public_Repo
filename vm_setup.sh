@@ -29,15 +29,11 @@ else
         echo "⚠️  Warning: key doesn't start with sk-cn- — double check this later."
     fi
 
-    # Write ~/.secrets
+    # Write ~/.secrets — only the three variables Claude Code actually needs
     cat > ~/.secrets << EOF
 export CONCENTRATE_API_KEY="${CONCENTRATE_KEY}"
 export ANTHROPIC_API_KEY="\$CONCENTRATE_API_KEY"
 export ANTHROPIC_BASE_URL="https://api.concentrate.ai"
-export ANTHROPIC_MODEL="minimax-m2-7-highspeed"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="minimax-m2-7-highspeed"
-export ANTHROPIC_DEFAULT_OPUS_MODEL="minimax-m2-7-highspeed"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL="minimax-m2-7-highspeed"
 EOF
 
     echo "✅ ~/.secrets written."
@@ -207,6 +203,7 @@ if [[ "$SETUP_CLAUDE" == "y" || "$SETUP_CLAUDE" == "Y" ]]; then
     fi
 
     # Write ~/.claude/settings.json
+    # Sets minimax as the default model — users can switch with /model inside Claude Code
     mkdir -p ~/.claude
 
     if [ -f ~/.claude/settings.json ]; then

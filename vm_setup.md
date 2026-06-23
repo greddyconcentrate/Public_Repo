@@ -19,7 +19,7 @@ By the end you will have:
 
 ### Step 0.1 — Create a dedicated Mac user account
 
-Do not run this setup under your existing Mac user account. The setup process writes environment variables and shell configuration specific to Concentrate.ai into your home directory. Mixing this into a personal environment causes conflicts that are annoying to undo.
+Do not run this setup under your existing Mac user account. The setup process writes environment variables and shell configuration specific to Concentrate.ai into your home directory. Mixing this into a personal environment causes conflicts.
 
 **Create a fresh macOS user account first:**
 
@@ -33,9 +33,9 @@ Do not run this setup under your existing Mac user account. The setup process wr
 
 ### Step 0.2 — iCloud Drive
 
-When you log into your new account, you may be prompted to sign into iCloud. You can sign in to access the App Store. **Do not enable iCloud Drive.** iCloud Drive syncs your Desktop and Documents folders to Apple's cloud, which creates conflicts with the development environment and risks syncing work files you do not want synced.
+When you log into your new account you may be prompted to sign into iCloud. You can sign in for App Store access. **Do not enable iCloud Drive.** iCloud Drive syncs your Desktop and Documents folders to Apple's servers, which conflicts with your development environment and risks syncing work files you do not want synced.
 
-When prompted during account setup: sign in to iCloud if you want App Store access, but toggle **iCloud Drive off**.
+When prompted: sign into iCloud if you want, but toggle **iCloud Drive off**.
 
 ### Step 0.3 — What you need before starting
 
@@ -49,7 +49,7 @@ Have all of these ready before running anything:
 
 **Concentrate API key:** The setup script's first step prompts you for this. Go get it now if you do not have it.
 
-**GitHub:** Per company policy, use your personal GitHub account — not a company one. This lets you keep your work and build a portfolio after the internship ends.
+**GitHub:** Use your personal GitHub account — not a company one. This lets you keep your work and build a portfolio after the internship ends.
 
 **API key safety:** Never commit your API key to a git repo. Never put it in a project folder. The script stores it in `~/.secrets`, which lives in your home directory outside any repo.
 
@@ -57,9 +57,9 @@ Have all of these ready before running anything:
 
 ## Part 1 — Generate an SSH Key on Your Mac
 
-You need an SSH key on your Mac to authenticate to your Blue Lobster VM. You generate the key here, then paste the public half into Blue Lobster when creating the VM.
+You need an SSH key on your Mac to authenticate to your Blue Lobster VM. Generate the key here, then paste the public half into Blue Lobster when creating the VM.
 
-> **Important:** Blue Lobster does not support Ed25519 keys. You must use RSA. The command below is correct — use it exactly as written.
+> **Important:** Blue Lobster does not support Ed25519 keys. You must use RSA. Use the command below exactly as written.
 
 Open a terminal and check whether you already have an RSA key:
 
@@ -102,7 +102,10 @@ Copy the entire output line. It starts with `ssh-rsa` and ends with your email. 
 | Machine name | Whatever you like — just a dashboard label |
 | Username | Whatever you want — pick one and use it consistently across all your VMs |
 
-5. Paste your public key from `cat ~/.ssh/id_rsa.pub` when prompted — paste it as one clean unbroken line
+5. Paste your public key from `cat ~/.ssh/id_rsa.pub` when prompted
+
+> **Important:** When pasting your public key, make sure there are no leading or trailing spaces. Blue Lobster is strict about this — extra whitespace will cause your SSH connection to fail.
+
 6. Click **Create Instance**
 
 Wait for status to show **running** before continuing.
@@ -121,10 +124,10 @@ In your Mac terminal:
 ssh [username]@[Blue_Lobster_IP]
 ```
 
-For example: `ssh admin@38.29.145.235`
+For example: `ssh admin@38.29.145.238`
 
 - Type `yes` when asked about the host fingerprint — expected on first connection
-- If prompted for a password instead of connecting directly, your SSH key was not injected correctly. Delete the VM, reprovision it, and paste the public key as one clean unbroken line.
+- If prompted for a password instead of connecting directly, your SSH key was not injected correctly. Delete the VM, reprovision it, and paste the public key carefully with no leading or trailing spaces.
 
 **Optional but recommended — store your passphrase in Mac Keychain:**
 
@@ -140,34 +143,36 @@ You are now inside your VM. All commands from this point run on the VM unless no
 
 The setup script handles everything from here: API key config, shell setup, git, Node.js, and Claude Code.
 
+Run these two commands — **do not combine them into one**. The first downloads the script. The second runs it interactively so you can respond to each prompt.
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/greddyconcentrate/Public_Repo/main/vm_setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/greddyconcentrate/Public_Repo/main/vm_setup.sh -o vm_setup.sh
 ```
 
-The script will walk you through five steps interactively. Here is what each step does and what to expect at the prompt.
+```bash
+bash vm_setup.sh
+```
+
+> **Why two steps?** Running `curl | bash` directly pipes the script into a non-interactive shell, which causes all prompts to be skipped silently. Always download first, then run.
+
+The script will walk you through five steps. Here is what each step does and what to expect.
 
 ---
 
 ### Script Step 1 — Concentrate API Key
-
-The script asks for your Concentrate API key.
 
 ```
 STEP 1: Concentrate API Key
 Enter your Concentrate API key (starts with sk-cn-): █
 ```
 
-What it does: writes `~/.secrets` containing your API key and model configuration. This file is sourced every time you open a terminal so your credentials are always available.
-
-If you see a warning that your key does not start with `sk-cn-`, double-check what you pasted. You can fix it later by editing `~/.secrets` directly.
+Paste your `sk-cn-...` key when prompted. The script writes it to `~/.secrets` along with model configuration. This file is sourced every time you open a terminal so your credentials are always available.
 
 ---
 
 ### Script Step 2 — Shell Configuration
 
-No input required. The script patches `~/.bashrc` to:
-- Source `~/.secrets` on every login
-- Add the npm global binary path needed for Claude Code
+No input required. The script patches `~/.bashrc` to source `~/.secrets` on every login and adds the npm global binary path needed for Claude Code.
 
 ```
 STEP 2: Shell configuration
@@ -195,13 +200,14 @@ STEP 4: Git setup
 Set up Git? (y/n): y
 ```
 
-The script will:
+Enter `y`. The script will:
+
 1. Install git if not already present
 2. Ask for your name and email — use what is linked to your GitHub account
-3. Generate an SSH key on the VM — separate from your Mac key; this is how the VM authenticates to GitHub
-4. Display the VM's public key and pause — you must add it to GitHub before pressing Enter
+3. Generate an SSH key on the VM — this is separate from your Mac key; it is how the VM authenticates to GitHub
+4. Display the VM's public key and pause
 
-When the script pauses:
+When the script displays the key and pauses:
 
 ```
 ============================================
@@ -216,7 +222,14 @@ Click 'New SSH key', paste the key above, save.
 Press Enter once you've added the key to GitHub...
 ```
 
-Go to [github.com/settings/keys](https://github.com/settings/keys), add the key, then come back and press Enter. The script will test the connection and confirm.
+**To add the key to GitHub:**
+1. Go to [github.com](https://github.com)
+2. Click your profile picture (top right) → **Settings**
+3. In the left sidebar click **SSH and GPG keys**
+4. Click **New SSH key**
+5. Paste the key and save
+
+Then come back to the terminal and press Enter. The script will test the connection and confirm.
 
 ---
 
@@ -227,7 +240,8 @@ STEP 5: Claude Code CLI
 Install and configure Claude Code CLI? (y/n): y
 ```
 
-The script will:
+Enter `y`. The script will:
+
 1. Install Node.js
 2. Configure a global npm directory at `~/.npm-global`
 3. Install Claude Code via npm
@@ -253,11 +267,6 @@ Summary:
   ~/.secrets        — API keys and model config
   ~/.bashrc         — sources ~/.secrets on login
   ~/dev_projects    — your working directory
-
-Next steps:
-  • Clone your repo: cd ~/dev_projects && git clone <your-repo-ssh-url>
-  • Reload shell:    source ~/.bashrc
-  • Test Claude:     claude -p 'hello'
 ```
 
 ---
@@ -369,8 +378,9 @@ curl https://api.concentrate.ai/v1/models \
 | `claude /status` shows `api.anthropic.com` | Run `source ~/.bashrc` and try again |
 | SSH to GitHub says Permission denied | VM's public key not added to GitHub — repeat the GitHub step in Part 4 |
 | Claude Code returns auth error | Concentrate key may have no credits — contact your manager |
-| SSH to VM asks for a password | Key not injected correctly — delete VM and reprovision |
+| SSH to VM asks for a password | Key not injected correctly — check for leading/trailing spaces, delete VM and reprovision |
 | Script exits unexpectedly mid-run | Note which step — script is idempotent, safe to re-run from the top |
+| All prompts skipped silently | You ran `curl | bash` directly — download first then run: see Part 4 |
 
 ---
 
