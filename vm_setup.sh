@@ -22,11 +22,11 @@ echo ""
 if grep -q "CONCENTRATE_API_KEY" ~/.secrets 2>/dev/null; then
     echo "✅ ~/.secrets already contains CONCENTRATE_API_KEY — skipping."
 else
-    read -p "Enter your Concentrate API key (starts with sk-cn-): " CONCENTRATE_KEY
+    read -p "Enter your Concentrate API key (starts with sk-cn-v1-): " CONCENTRATE_KEY
     echo ""
 
-    if [[ ! "$CONCENTRATE_KEY" == sk-cn-* ]]; then
-        echo "⚠️  Warning: key doesn't start with sk-cn- — double check this later."
+    if [[ ! "$CONCENTRATE_KEY" == sk-cn-v1-* ]]; then
+        echo "⚠️  Warning: key doesn't look right — expected sk-cn-v1-... Check for leading/trailing spaces and try again."
     fi
 
     # Write ~/.secrets — only the three variables Claude Code actually needs
