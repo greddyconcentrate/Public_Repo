@@ -3,6 +3,7 @@
 **Audience:** New interns and developers joining Concentrate.ai
 **Last updated:** June 2026
 **Maintained by:** Engineering team
+**Review status:** Pending CTO review
 
 This guide walks you through setting up your Linux development environment on a Blue Lobster VM from scratch. Follow it top to bottom. Do not skip ahead.
 

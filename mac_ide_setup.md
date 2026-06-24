@@ -1,7 +1,8 @@
 # Mac IDE Setup — Concentrate.ai Developer Environment
 **Audience:** New interns and developers joining Concentrate.ai  
 **Last updated:** June 2026  
-**Maintained by:** Engineering team
+**Maintained by:** Engineering team  
+**Review status:** Pending CTO review
 
 > Run `mac_ide_setup.sh` for an automated setup on a fresh Mac user account.  
 > This document explains what the script does and covers manual setup for accounts where the script cannot run.
