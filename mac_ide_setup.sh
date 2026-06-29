@@ -3,6 +3,7 @@
 # Sets up a fresh Mac user account for Concentrate.ai development.
 # Safe to run on accounts with no prior configuration.
 # If .zshrc already exists, this script will exit without modifying it.
+# Review status: Pending CTO review
 # Requires: curl, zsh (default on all modern Macs)
 
 echo ""

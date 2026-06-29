@@ -3,6 +3,7 @@
 # Concentrate.ai / Blue Lobster — New VM Setup Script
 # Run this once on a fresh Ubuntu 22.04 VM.
 # Idempotent: safe to run more than once.
+# Review status: Pending CTO review
 # =============================================================================
 
 set -e
